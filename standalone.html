@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小学数学题库测试（单文件版）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+            min-height: 500px;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 18px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        input[type="number"].error {
+            border-color: #ff6b6b;
+            background-color: #fff5f5;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .question-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 48px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .feedback {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .feedback.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .feedback.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .question-text {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>小学数学题库测试（单文件版）</h1>
+
+        <!-- 首页 -->
+        <div id="homePage" class="page active">
+            <div class="input-group">
+                <label>题目数量 (N)</label>
+                <input type="number" id="questionCount" min="1" max="100" value="5">
+            </div>
+            <button class="btn btn-primary" onclick="startTest()">开始测试</button>
+            <button class="btn btn-secondary" onclick="showLogs()">查看日志</button>
+        </div>
+
+        <!-- 答题页 -->
+        <div id="quizPage" class="page">
+            <div class="progress-info">
+                <span>第 <span id="currentQuestionNum">1</span> 题 / 共 <span id="totalQuestions">5</span> 题</span>
+                <span>当前得分: <span id="currentScore">0</span></span>
+            </div>
+            <div class="question-display">
+                <div class="question-text" id="questionText">2 + 3 =</div>
+            </div>
+            <div class="input-group">
+                <input type="number" id="answerInput" placeholder="请输入答案">
+            </div>
+            <button class="btn btn-primary" onclick="submitAnswer()">提交答案</button>
+            <div class="feedback" id="feedback"></div>
+        </div>
+
+        <!-- 结果页 -->
+        <div id="resultPage" class="page">
+            <div class="progress-info">
+                <span>测试完成！</span>
+                <span>得分: <span id="finalScore">0</span></span>
+            </div>
+            <button class="btn btn-secondary" onclick="resetHome()">重新测试</button>
+        </div>
+    </div>
+
+    <script>
+        // 日志系统
+        const logs = [];
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            logs.push(`[${timestamp}] ${type.toUpperCase()}: ${message}`);
+            console.log(message);
+        }
+
+        function showLogs() {
+            alert('日志:\n\n' + logs.join('\n'));
+        }
+
+        // 全局状态
+        let currentTest = {
+            questions: [],
+            currentIndex: 0,
+            correctCount: 0,
+            answers: []
+        };
+
+        // 工具函数
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // 题目生成器
+        function generateQuestions(count) {
+            const questions = [];
+            for (let i = 0; i < count; i++) {
+                const a = Math.floor(Math.random() * 10) + 1;
+                const b = Math.floor(Math.random() * 10) + 1;
+                const isAddition = Math.random() > 0.5;
+                
+                let question, answer;
+                if (isAddition) {
+                    question = `${a} + ${b} =`;
+                    answer = a + b;
+                } else {
+                    const max = Math.max(a, b);
+                    const min = Math.min(a, b);
+                    question = `${max} - ${min} =`;
+                    answer = max - min;
+                }
+                
+                questions.push({
+                    id: generateUUID(),
+                    question,
+                    answer,
+                    userAnswer: null,
+                    isCorrect: false
+                });
+            }
+            return questions;
+        }
+
+        // 开始测试
+        function startTest() {
+            log('开始测试被调用', 'info');
+            
+            try {
+                const count = parseInt(document.getElementById('questionCount').value);
+                log(`题目数量: ${count}`, 'info');
+                
+                if (isNaN(count) || count < 1 || count > 100) {
+                    log('题目数量无效', 'error');
+                    alert('题目数量必须在 1-100 之间');
+                    return;
+                }
+
+                currentTest.questions = generateQuestions(count);
+                currentTest.currentIndex = 0;
+                currentTest.correctCount = 0;
+                currentTest.answers = [];
+
+                log(`生成了 ${currentTest.questions.length} 道题目`, 'info');
+
+                showPage('quizPage');
+                document.getElementById('totalQuestions').textContent = count;
+                document.getElementById('currentScore').textContent = '0';
+                
+                showQuestion();
+                
+                log('开始测试完成', 'success');
+            } catch (error) {
+                log(`开始测试失败: ${error.message}`, 'error');
+                alert('开始测试失败: ' + error.message);
+            }
+        }
+
+        // 显示题目
+        function showQuestion() {
+            log(`显示第 ${currentTest.currentIndex + 1} 题`, 'info');
+            
+            const question = currentTest.questions[currentTest.currentIndex];
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('currentQuestionNum').textContent = currentTest.currentIndex + 1;
+            document.getElementById('answerInput').value = '';
+            document.getElementById('answerInput').disabled = false;
+            document.getElementById('answerInput').classList.remove('error');
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('answerInput').focus();
+        }
+
+        // 提交答案
+        function submitAnswer() {
+            log('提交答案被调用', 'info');
+            
+            try {
+                const userAnswer = parseInt(document.getElementById('answerInput').value);
+                const question = currentTest.questions[currentTest.currentIndex];
+                
+                if (isNaN(userAnswer)) {
+                    log('答案无效', 'error');
+                    alert('请输入有效的数字');
+                    return;
+                }
+
+                const isCorrect = userAnswer === question.answer;
+                question.userAnswer = userAnswer;
+                question.isCorrect = isCorrect;
+
+                document.getElementById('answerInput').disabled = true;
+                
+                log(`用户答案: ${userAnswer}, 正确答案: ${question.answer}, 结果: ${isCorrect}`, 'info');
+
+                if (isCorrect) {
+                    currentTest.correctCount++;
+                    showFeedback('✓ 正确！', 'success');
+                    log('答案正确', 'success');
+                } else {
+                    showFeedback('✗ 错误！', 'error');
+                    log('答案错误', 'error');
+                }
+
+                // 更新分数
+                const score = Math.round((currentTest.correctCount / (currentTest.currentIndex + 1)) * 100);
+                document.getElementById('currentScore').textContent = score;
+
+                // 延迟后进入下一题
+                setTimeout(() => {
+                    currentTest.currentIndex++;
+                    
+                    if (currentTest.currentIndex >= currentTest.questions.length) {
+                        showResult();
+                    } else {
+                        showQuestion();
+                    }
+                }, 1000);
+
+            } catch (error) {
+                log(`提交答案失败: ${error.message}`, 'error');
+                alert('提交答案失败: ' + error.message);
+            }
+        }
+
+        // 显示反馈
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = 'feedback ' + type;
+            feedback.style.display = 'block';
+        }
+
+        // 显示结果
+        function showResult() {
+            log('显示结果', 'info');
+            
+            const score = Math.round((currentTest.correctCount / currentTest.questions.length) * 100);
+            document.getElementById('finalScore').textContent = score;
+            
+            showPage('resultPage');
+            log(`测试完成，得分: ${score}`, 'success');
+        }
+
+        // 显示页面
+        function showPage(pageId) {
+            log(`切换到页面: ${pageId}`, 'info');
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // 重置到首页
+        function resetHome() {
+            log('重置到首页', 'info');
+            currentTest = {
+                questions: [],
+                currentIndex: 0,
+                correctCount: 0,
+                answers: []
+            };
+            showPage('homePage');
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            log('DOM 加载完成', 'info');
+            log('应用初始化完成', 'success');
+            
+            // 检查所有函数
+            log('检查全局函数...', 'info');
+            const functions = ['startTest', 'submitAnswer', 'showPage', 'resetHome'];
+            functions.forEach(func => {
+                if (typeof window[func] === 'function') {
+                    log(`✓ ${func} 函数存在`, 'success');
+                } else {
+                    log(`✗ ${func} 函数不存在`, 'error');
+                }
+            });
+        });
+
+        // 错误处理
+        window.onerror = function(message, source, lineno, colno, error) {
+            log(`全局错误: ${message}`, 'error');
+            log(`  位置: ${source}:${lineno}:${colno}`, 'error');
+            if (error) {
+                log(`  堆栈: ${error.stack}`, 'error');
+            }
+        };
+    </script>
+</body>
+</html>

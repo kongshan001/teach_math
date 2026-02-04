@@ -20,8 +20,8 @@
                 <input type="checkbox" id="enableTimer">
                 <label for="enableTimer">启用总计时器</label>
             </div>
-            <button class="btn btn-primary" onclick="startTest()">开始测试</button>
-            <button class="btn btn-secondary" onclick="showRecords()">查看历史记录</button>
+            <button class="btn btn-primary" id="startTestBtn">开始测试</button>
+            <button class="btn btn-secondary" id="showRecordsBtn">查看历史记录</button>
         </div>
 
         <!-- 答题页 -->
@@ -40,9 +40,9 @@
             <div class="input-group">
                 <input type="number" id="answerInput" placeholder="请输入答案">
             </div>
-            <button class="btn btn-primary" onclick="submitAnswer()">提交答案</button>
-            <button class="btn btn-secondary" id="modifyBtn" onclick="modifyAnswer()" style="display: none;">修改答案</button>
-            <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()" style="display: none;">下一题</button>
+            <button class="btn btn-primary" id="submitAnswerBtn">提交答案</button>
+            <button class="btn btn-secondary" id="modifyBtn" style="display: none;">修改答案</button>
+            <button class="btn btn-secondary" id="nextBtn" style="display: none;">下一题</button>
             <div class="feedback" id="feedback"></div>
         </div>
 
@@ -55,22 +55,22 @@
                 </div>
             </div>
             <div class="score-detail" id="totalTimeDisplay">总用时: 0分0秒</div>
-            <button class="btn btn-primary" onclick="showResultDetail()">查看详情</button>
-            <button class="btn btn-secondary" onclick="resetHome()">重新测试</button>
-            <button class="btn btn-secondary" onclick="showRecords()">查看历史记录</button>
+            <button class="btn btn-primary" id="showResultDetailBtn">查看详情</button>
+            <button class="btn btn-secondary" id="resetHomeBtn">重新测试</button>
+            <button class="btn btn-secondary" id="showRecordsBtn2">查看历史记录</button>
         </div>
 
         <!-- 历史记录页 -->
         <div id="recordsPage" class="page">
             <div class="filter-buttons">
-                <button class="filter-btn active" onclick="showRecords('all')">全部</button>
-                <button class="filter-btn" onclick="showRecords('addition')">加减法</button>
-                <button class="filter-btn" onclick="showRecords('multiplication')">乘法</button>
-                <button class="filter-btn" onclick="showRecords('composite')">复合运算</button>
-                <button class="filter-btn" onclick="showRecords('wrong')">错题集</button>
+                <button class="filter-btn active" data-filter="all">全部</button>
+                <button class="filter-btn" data-filter="addition">加减法</button>
+                <button class="filter-btn" data-filter="multiplication">乘法</button>
+                <button class="filter-btn" data-filter="composite">复合运算</button>
+                <button class="filter-btn" data-filter="wrong">错题集</button>
             </div>
             <div class="records-list" id="recordsList"></div>
-            <button class="btn btn-secondary" onclick="resetHome()" style="margin-top: 20px;">返回首页</button>
+            <button class="btn btn-secondary" id="resetHomeBtn2" style="margin-top: 20px;">返回首页</button>
         </div>
     </div>
 
@@ -79,10 +79,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">答题详情</h2>
-                <button class="close-btn" onclick="closeDetailModal()">&times;</button>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
             </div>
             <div id="detailContent"></div>
-            <button class="btn btn-danger" onclick="deleteCurrentRecord()" style="margin-top: 20px;">删除记录</button>
+            <button class="btn btn-danger" id="deleteRecordBtn" style="margin-top: 20px;">删除记录</button>
         </div>
     </div>
 
