@@ -153,7 +153,18 @@ export function generateQuestions(count) {
     const types = ['addition', 'multiplication', 'composite'];
     
     for (let i = 0; i < count; i++) {
-        const type = types[Math.floor(Math.random() * types.length)];
+        const tmp = Math.random() * 100;
+        let type;
+        if (tmp < 10){
+            type = "addition";
+        }
+        else if (tmp < 20){
+            type = "multiplication";
+        }
+        else{
+            type = "composite";
+        }
+
         let question;
         
         if (type === 'addition') {
