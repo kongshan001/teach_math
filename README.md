@@ -34,6 +34,13 @@
 - 答错按比例扣分（如20题答错1题，扣5分）
 - 分数四舍五入取整
 
+### 代码架构
+- **模块化设计**: 采用 ES6 模块系统，代码按功能拆分为 10 个模块
+- **易于维护**: 每个模块职责单一，便于定位和修改问题
+- **可扩展性强**: 新增功能只需创建新模块或修改对应模块
+
+**详细架构说明**: 查看 [STRUCTURE.md](STRUCTURE.md)
+
 ## 使用方法
 
 ### 1. 打开应用
@@ -178,17 +185,54 @@
 ### 文件结构
 ```
 teach_math/
-├── index.html    # 主应用文件（包含HTML、CSS、JavaScript）
-└── README.md     # 使用说明
+├── css/
+│   └── style.css          # 全局样式
+├── js/
+│   ├── main.js            # 主入口
+│   ├── utils.js           # 工具函数
+│   ├── state.js           # 状态管理
+│   ├── timer.js           # 计时系统
+│   ├── storage.js         # 存储管理
+│   ├── questionGenerator.js # 题目生成器
+│   ├── quiz.js            # 答题逻辑
+│   ├── test.js            # 测试流程
+│   ├── review.js          # 复盘功能
+│   └── ui.js              # UI 控制
+├── index.html             # 主页面
+├── STRUCTURE.md           # 架构文档
+└── README.md              # 项目说明
 ```
 
 ### 核心功能模块
-- 题目生成器（generateAddSubtraction, generateMultiplication, generateComposite）
-- 计时系统（startTimer, updateTimerDisplay）
-- 答题交互（submitAnswer, modifyAnswer）
-- 评分系统（自动计算百分制分数）
-- 存储管理（localStorage 操作）
-- 复盘功能（记录展示、筛选）
+- **questionGenerator.js**: 题目生成器
+  - generateAddSubtraction(): 加减法
+  - generateMultiplication(): 乘法
+  - generateComposite(): 复合运算
+  - generateQuestions(): 生成题目集
+- **timer.js**: 计时系统
+  - startTimer(): 开始计时
+  - stopTimer(): 停止计时
+  - updateTimerDisplay(): 更新显示
+- **quiz.js**: 答题逻辑
+  - submitAnswer(): 提交答案
+  - modifyAnswer(): 修改答案
+  - nextQuestion(): 下一题
+- **test.js**: 测试流程
+  - startTest(): 开始测试
+  - showQuestion(): 显示题目
+  - showResult(): 显示结果
+- **storage.js**: 存储管理
+  - saveTestRecord(): 保存记录
+  - loadRecords(): 加载记录
+  - deleteRecord(): 删除记录
+- **review.js**: 复盘功能
+  - showRecords(): 显示记录列表
+  - showRecordDetail(): 显示记录详情
+  - deleteCurrentRecord(): 删除记录
+- **ui.js**: UI 控制
+  - showPage(): 页面切换
+  - showFeedback(): 显示反馈
+  - updateProgressInfo(): 更新进度
 
 ## 许可证
 
