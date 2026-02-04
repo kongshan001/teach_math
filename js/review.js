@@ -20,6 +20,8 @@ export function showResultDetail(record) {
         let statusText = q.isCorrect ? '✓' : '✗';
         let statusLabel = !q.isCorrect ? '<strong style="color: #dc3545;">（错误）</strong>' : '';
         
+        console.log(`showResultDetail - 题目 ${index + 1}: isCorrect=${q.isCorrect}, hadError=${q.hadError}, wasCorrect=${q.wasCorrect}`);
+        
         if (q.hadError && q.isCorrect) {
             statusClass = 'correct-but-mistake';
             statusLabel = '<strong style="color: #ffa502;">（曾经错过）</strong>';
@@ -101,6 +103,8 @@ export function showRecordDetail(testId) {
         let statusClass = q.isCorrect ? 'correct' : 'incorrect';
         let statusText = q.isCorrect ? '✓' : '✗';
         let statusLabel = !q.isCorrect ? '<strong style="color: #dc3545;">（错误）</strong>' : '';
+        
+        console.log(`showRecordDetail - 题目 ${index + 1}: isCorrect=${q.isCorrect}, hadError=${q.hadError}, wasCorrect=${q.wasCorrect}`);
         
         if (q.hadError && q.isCorrect) {
             statusClass = 'correct-but-mistake';

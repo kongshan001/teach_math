@@ -9,17 +9,28 @@ export function submitAnswer() {
     const isCorrect = userAnswer === question.answer;
     const timeSpent = getMaxTime() - getTimeLeft();
 
+    console.log(`submitAnswer - question.id: ${question.id}, userAnswer: ${userAnswer}, isCorrect: ${isCorrect}`);
+    console.log(`submitAnswer - currentTest.answers.length: ${currentTest.answers.length}`);
+    console.log(`submitAnswer - currentTest.answers:`, currentTest.answers.map(a => ({ questionId: a.questionId, hadError: a.hadError, isCorrect: a.isCorrect })));
+
     const existingAnswerIndex = currentTest.answers.findIndex(
         a => a.questionId === question.id
     );
 
+    console.log(`submitAnswer - existingAnswerIndex: ${existingAnswerIndex}, isCorrect: ${isCorrect}`);
+
     if (existingAnswerIndex !== -1) {
+        const prevHadError = currentTest.answers[existingAnswerIndex].hadError;
+        const newHadError = prevHadError || !isCorrect;
+        
+        console.log(`submitAnswer - prevHadError: ${prevHadError}, newHadError: ${newHadError}`);
+        
         currentTest.answers[existingAnswerIndex] = {
             ...currentTest.answers[existingAnswerIndex],
             userAnswer: userAnswer,
             isCorrect: isCorrect,
             timeSpent: currentTest.answers[existingAnswerIndex].timeSpent + timeSpent,
-            hadError: currentTest.answers[existingAnswerIndex].hadError || !isCorrect
+            hadError: newHadError
         };
         
         if (isCorrect && !currentTest.answers[existingAnswerIndex].wasCorrect) {
@@ -27,8 +38,10 @@ export function submitAnswer() {
         }
         
         currentTest.answers[existingAnswerIndex].wasCorrect = isCorrect;
+        
+        console.log(`submitAnswer - Updated answer:`, currentTest.answers[existingAnswerIndex]);
     } else {
-        currentTest.answers.push({
+        const answer = {
             questionId: question.id,
             question: question.question,
             userAnswer: userAnswer,
@@ -40,7 +53,10 @@ export function submitAnswer() {
             timeSpent: timeSpent,
             hadError: !isCorrect,
             wasCorrect: isCorrect
-        });
+        };
+        
+        currentTest.answers.push(answer);
+        console.log(`submitAnswer - New answer:`, answer);
 
         if (isCorrect) {
             currentTest.correctCount++;
@@ -66,6 +82,7 @@ export function submitAnswer() {
 // 修改答案
 export function modifyAnswer() {
     const input = document.getElementById('answerInput');
+    input.value = '';
     input.disabled = false;
     input.classList.remove('error');
     input.focus();
