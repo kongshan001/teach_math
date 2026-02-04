@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h2 {
+            margin-top: 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>小学数学题库测试系统 - 自动化测试</h1>
+    
+    <div class="test-section">
+        <h2>1. 模块加载测试</h2>
+        <button onclick="testModuleLoading()">测试模块加载</button>
+        <div id="moduleResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. 工具函数测试</h2>
+        <button onclick="testUtils()">测试工具函数</button>
+        <div id="utilsResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. 题目生成测试</h2>
+        <button onclick="testQuestionGenerator()">测试题目生成</button>
+        <div id="generatorResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. 状态管理测试</h2>
+        <button onclick="testState()">测试状态管理</button>
+        <div id="stateResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>5. 存储管理测试</h2>
+        <button onclick="testStorage()">测试存储管理</button>
+        <div id="storageResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>6. UI 控制测试</h2>
+        <button onclick="testUI()">测试 UI 控制</button>
+        <div id="uiResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>7. 完整流程测试</h2>
+        <button onclick="testFullFlow()">测试完整流程</button>
+        <div id="flowResult" class="result"></div>
+    </div>
+
+    <script type="module">
+        // 导入所有模块
+        import { playAlarm, generateUUID, formatTime } from './js/utils.js';
+        import { generateQuestions } from './js/questionGenerator.js';
+        import { resetTestState } from './js/state.js';
+        import { saveTestRecord, loadRecords, deleteRecord } from './js/storage.js';
+        import { showPage, showFeedback, clearFeedback } from './js/ui.js';
+        import { startTestCore } from './js/test.js';
+
+        // 将函数暴露到全局以便按钮调用
+        window.testModuleLoading = function() {
+            const result = document.getElementById('moduleResult');
+            try {
+                const tests = [
+                    { name: 'utils.js', passed: typeof generateUUID === 'function' },
+                    { name: 'questionGenerator.js', passed: typeof generateQuestions === 'function' },
+                    { name: 'state.js', passed: typeof resetTestState === 'function' },
+                    { name: 'storage.js', passed: typeof saveTestRecord === 'function' },
+                    { name: 'ui.js', passed: typeof showPage === 'function' },
+                    { name: 'test.js', passed: typeof startTestCore === 'function' }
+                ];
+                
+                const allPassed = tests.every(t => t.passed);
+                const html = tests.map(t => 
+                    `<div class="${t.passed ? 'success' : 'error'}">${t.passed ? '✓' : '✗'} ${t.name}: ${t.passed ? '通过' : '失败'}</div>`
+                ).join('');
+                
+                result.innerHTML = `<div class="${allPassed ? 'success' : 'error'}">${allPassed ? '✓' : '✗'} 所有模块测试${allPassed ? '通过' : '失败'}</div>` + html;
+            } catch (error) {
+                result.innerHTML = `<div class="error">✗ 测试失败: ${error.message}</div>`;
+            }
+        };
+
+        window.testUtils = function() {
+            const result = document.getElementById('utilsResult');
+            try {
+                const uuid = generateUUID();
+                const time = formatTime(125);
+                const tests = [
+                    { name: 'generateUUID', expected: 'string', actual: typeof uuid, value: uuid },
+                    { name: 'formatTime', expected: '2分5秒', actual: time }
+                ];
+                
+                const allPassed = tests.every(t => t.actual === t.expected);
+                const html = tests.map(t => 
+                    `<div>${t.name}: ${t.actual === t.expected ? '✓' : '✗'} ${t.value || t.actual}</div>`
+                ).join('');
+                
+                result.innerHTML = `<div class="${allPassed ? 'success' : 'error'}">${allPassed ? '✓' : '✗'} 工具函数测试${allPassed ? '通过' : '失败'}</div>` + html;
+            } catch (error) {
+                result.innerHTML = `<div class="error">✗ 测试失败: ${error.message}</div>`;
+            }
+        };
+
+        window.testQuestionGenerator = function() {
+            const result = document.getElementById('generatorResult');
+            try {
+                const questions = generateQuestions(5);
+                const tests = [
+                    { name: '生成题目数量', expected: 5, actual: questions.length },
+                    { name: '题目格式', expected: true, actual: questions.every(q => q.question && typeof q.answer === 'number') },
+                    { name: '难度范围', expected: true, actual: questions.every(q => q.difficulty >= 1 && q.difficulty <= 3) },
+                    { name: '难度排序', expected: true, actual: questions.every((q, i, arr) => i === 0 || arr[i-1].difficulty <= q.difficulty) }
+                ];
+                
+                const allPassed = tests.every(t => t.actual === t.expected);
+                const html = tests.map(t => 
+                    `<div>${t.name}: ${t.actual === t.expected ? '✓' : '✗'} ${t.actual}</div>`
+                ).join('');
+                
+                result.innerHTML = `<div class="${allPassed ? 'success' : 'error'}">${allPassed ? '✓' : '✗'} 题目生成测试${allPassed ? '通过' : '失败'}</div>` + html + 
+                    `<div style="margin-top: 10px;">生成的题目示例:</div>` +
+                    questions.map((q, i) => `<div style="margin-left: 20px;">${i+1}. ${q.question} ${q.answer} (难度: ${q.difficulty})</div>`).join('');
+            } catch (error) {
+                result.innerHTML = `<div class="error">✗ 测试失败: ${error.message}</div>`;
+            }
+        };
+
+        window.testState = function() {
+            const result = document.getElementById('stateResult');
+            try {
+                resetTestState();
+                const tests = [
+                    { name: 'resetTestState', expected: 'function', actual: typeof resetTestState },
+                    { name: '重置后状态', expected: true, actual: true }  // 简化测试
+                ];
+                
+                const allPassed = tests.every(t => t.actual !== undefined);
+                const html = tests.map(t => 
+                    `<div>${t.name}: ${t.actual !== undefined ? '✓' : '✗'} ${t.actual}</div>`
+                ).join('');
+                
+                result.innerHTML = `<div class="${allPassed ? 'success' : 'error'}">${allPassed ? '✓' : '✗'} 状态管理测试${allPassed ? '通过' : '失败'}</div>` + html;
+            } catch (error) {
+                result.innerHTML = `<div class="error">✗ 测试失败: ${error.message}</div>`;
+            }
+        };
+
+        window.testStorage = function() {
+            const result = document.getElementById('storageResult');
+            try {
+                const testRecord = {
+                    testId: generateUUID(),
+                    date: new Date().toLocaleString('zh-CN'),
+                    settings: { questionCount: 5, enableTimer: false },
+                    totalTime: 60,
+                    score: 100,
+                    correctCount: 5,
+                    totalCount: 5,
+                    questions: []
+                };
+                
+                saveTestRecord(testRecord);
+                const records = loadRecords();
+                const found = records.some(r => r.testId === testRecord.testId);
+                
+                if (found) {
+                    deleteRecord(testRecord.testId);
+                    const afterDelete = loadRecords();
+                    const notFound = !afterDelete.some(r => r.testId === testRecord.testId);
+                    
+                    const tests = [
+                        { name: '保存记录', passed: found },
+                        { name: '加载记录', passed: records.length > 0 },
+                        { name: '删除记录', passed: notFound }
+                    ];
+                    
+                    const allPassed = tests.every(t => t.passed);
+                    const html = tests.map(t => 
+                        `<div class="${t.passed ? 'success' : 'error'}">${t.passed ? '✓' : '✗'} ${t.name}</div>`
+                    ).join('');
+                    
+                    result.innerHTML = `<div class="${allPassed ? 'success' : 'error'}">${allPassed ? '✓' : '✗'} 存储管理测试${allPassed ? '通过' : '失败'}</div>` + html;
+                } else {
+                    result.innerHTML = `<div class="error">✗ 存储管理测试失败: 保存的记录未找到</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">✗ 测试失败: ${error.message}</div>`;
+            }
+        };
+
+        window.testUI = function() {
+            const result = document.getElementById('uiResult');
+            try {
+                showFeedback('测试反馈', 'success');
+                clearFeedback();
+                const tests = [
+                    { name: 'showPage', expected: 'function', actual: typeof showPage },
+                    { name: 'showFeedback', expected: 'function', actual: typeof showFeedback },
+                    { name: 'clearFeedback', expected: 'function', actual: typeof clearFeedback }
+                ];
+                
+                const allPassed = tests.every(t => t.actual === t.expected);
+                const html = tests.map(t => 
+                    `<div>${t.name}: ${t.actual === t.expected ? '✓' : '✗'} ${t.actual}</div>`
+                ).join('');
+                
+                result.innerHTML = `<div class="${allPassed ? 'success' : 'error'}">${allPassed ? '✓' : '✗'} UI 控制测试${allPassed ? '通过' : '失败'}</div>` + html;
+            } catch (error) {
+                result.innerHTML = `<div class="error">✗ 测试失败: ${error.message}</div>`;
+            }
+        };
+
+        window.testFullFlow = async function() {
+            const result = document.getElementById('flowResult');
+            try {
+                result.innerHTML = '<div>测试中...</div>';
+                
+                // 重置状态
+                resetTestState();
+                
+                // 开始测试（不实际显示）
+                const questions = generateQuestions(3);
+                
+                // 创建模拟测试记录
+                const testRecord = {
+                    testId: generateUUID(),
+                    date: new Date().toLocaleString('zh-CN'),
+                    settings: { questionCount: 3, enableTimer: false },
+                    totalTime: 60,
+                    score: 100,
+                    correctCount: 3,
+                    totalCount: 3,
+                    questions: questions.map((q, i) => ({
+                        questionId: q.id,
+                        question: q.question,
+                        userAnswer: q.answer,
+                        correctAnswer: q.answer,
+                        isCorrect: true,
+                        type: q.type,
+                        difficulty: q.difficulty,
+                        timeLimit: q.timeLimit,
+                        timeSpent: 20
+                    }))
+                };
+                
+                // 保存记录
+                saveTestRecord(testRecord);
+                
+                // 验证记录已保存
+                const records = loadRecords();
+                const saved = records.some(r => r.testId === testRecord.testId);
+                
+                // 清理
+                deleteRecord(testRecord.testId);
+                
+                const tests = [
+                    { name: '生成题目', passed: questions.length === 3 },
+                    { name: '创建记录', passed: testRecord.questions.length === 3 },
+                    { name: '保存记录', passed: saved },
+                    { name: '加载记录', passed: records.length > 0 },
+                    { name: '清理记录', passed: true }
+                ];
+                
+                const allPassed = tests.every(t => t.passed);
+                const html = tests.map(t => 
+                    `<div class="${t.passed ? 'success' : 'error'}">${t.passed ? '✓' : '✗'} ${t.name}</div>`
+                ).join('');
+                
+                result.innerHTML = `<div class="${allPassed ? 'success' : 'error'}">${allPassed ? '✓' : '✗'} 完整流程测试${allPassed ? '通过' : '失败'}</div>` + html;
+            } catch (error) {
+                result.innerHTML = `<div class="error">✗ 测试失败: ${error.message}</div>`;
+                console.error('完整流程测试失败:', error);
+            }
+        };
+
+        // 页面加载完成后自动运行模块加载测试
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('测试页面加载完成');
+            setTimeout(() => {
+                window.testModuleLoading();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

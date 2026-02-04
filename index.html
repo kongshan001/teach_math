@@ -87,5 +87,25 @@
     </div>
 
     <script type="module" src="js/main.js"></script>
+    <script>
+        // 添加加载指示器
+        console.log('HTML 加载完成，等待模块加载...');
+        
+        // 模块加载完成的指示器
+        window.appLoaded = false;
+        
+        // 检查应用是否加载完成
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM 加载完成');
+            
+            // 5秒后检查应用是否加载
+            setTimeout(() => {
+                if (!window.appLoaded) {
+                    console.error('应用加载超时！');
+                    alert('应用加载超时，请刷新页面重试');
+                }
+            }, 5000);
+        });
+    </script>
 </body>
 </html>
