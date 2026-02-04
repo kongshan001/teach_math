@@ -117,38 +117,69 @@ Page({
   },
 
   onAnswerInput(e) {
+    const value = e.detail.value;
+    console.log('=== 输入事件 ===', 'value:', value, 'type:', typeof value);
     this.setData({
-      answer: e.detail.value
+      answer: value
     });
   },
 
   submitAnswer(userAnswerOverride = null) {
     const inputAnswer = this.data.answer;
+    console.log('=== 提交答案前 ===');
+    console.log('inputAnswer原始值:', JSON.stringify(inputAnswer));
+    console.log('inputAnswer长度:', inputAnswer ? inputAnswer.length : 'null/undefined');
+    
     let answer;
     
     if (userAnswerOverride !== null) {
       answer = userAnswerOverride;
+      console.log('使用覆盖答案:', answer);
     } else {
+      // 更健壮的解析方式
       if (inputAnswer === '' || inputAnswer === undefined || inputAnswer === null) {
         answer = NaN;
+        console.log('输入为空，设置为NaN');
       } else {
-        const parsed = parseInt(inputAnswer);
-        answer = isNaN(parsed) ? NaN : parsed;
+        // 先trim空格，然后用Number转换
+        const trimmed = String(inputAnswer).trim();
+        const numberValue = Number(trimmed);
+        
+        // 检查是否是有效数字且不是NaN
+        if (isNaN(numberValue) || !isFinite(numberValue)) {
+          answer = NaN;
+          console.log('转换失败或不是有效数字:', trimmed);
+        } else {
+          answer = numberValue;
+          console.log('转换成功:', trimmed, '->', answer);
+        }
       }
     }
     
     const test = app.globalData.currentTest;
     const question = test.questions[test.currentIndex];
     
-    // 使用宽松比较，避免类型问题
-    const isCorrect = answer == question.answer;
+    // 先检查answer是否为NaN
+    const isValidAnswer = !isNaN(answer);
+    const isCorrect = isValidAnswer && answer == question.answer;
 
     console.log('=== 答题调试信息 ===');
     console.log('用户输入:', inputAnswer, typeof inputAnswer);
     console.log('转换后答案:', answer, typeof answer);
+    console.log('是否有效答案:', isValidAnswer);
     console.log('正确答案:', question.answer, typeof question.answer);
     console.log('是否正确:', isCorrect);
     console.log('答案比较:', answer, '==', question.answer, '=', answer == question.answer);
+    console.log('宽松比较结果:', String(answer), '==', String(question.answer), '=', String(answer) == String(question.answer));
+
+    // 如果答案无效，提示用户
+    if (!isValidAnswer) {
+      wx.showToast({
+        title: '请输入有效的数字答案',
+        icon: 'none'
+      });
+      return;
+    }
 
     // 查找是否已有答案
     const existingAnswerIndex = test.answers.findIndex(
