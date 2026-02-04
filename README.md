@@ -5,7 +5,7 @@
 
 基于浏览器的小学数学练习工具，支持多种题型、计时功能和历史记录复盘。
 
-[GitHub 仓库地址](https://github.com/kongshan001/teach_math)
+[GitHub 仓库地址](https://github.com/kongshan001/teach_math) | [在线演示](https://kongshan001.github.io/teach_math/)
 
 ## 功能特性
 
@@ -37,7 +37,13 @@
 ## 使用方法
 
 ### 1. 打开应用
-直接在浏览器中打开 `index.html` 文件即可使用。
+
+**方式一：在线使用（推荐）**
+访问 [https://kongshan001.github.io/teach_math/](https://kongshan001.github.io/teach_math/)
+
+**方式二：本地使用**
+1. 克隆仓库：`git clone https://github.com/kongshan001/teach_math.git`
+2. 在浏览器中打开 `index.html` 文件
 
 ### 2. 开始测试
 1. 在首页设置题目数量（默认20题）
