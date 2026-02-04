@@ -139,14 +139,16 @@ Page({
     
     const test = app.globalData.currentTest;
     const question = test.questions[test.currentIndex];
-    const isCorrect = answer === question.answer;
+    
+    // 使用宽松比较，避免类型问题
+    const isCorrect = answer == question.answer;
 
     console.log('=== 答题调试信息 ===');
     console.log('用户输入:', inputAnswer, typeof inputAnswer);
     console.log('转换后答案:', answer, typeof answer);
     console.log('正确答案:', question.answer, typeof question.answer);
     console.log('是否正确:', isCorrect);
-    console.log('答案比较:', answer, '===', question.answer, '=', answer === question.answer);
+    console.log('答案比较:', answer, '==', question.answer, '=', answer == question.answer);
 
     // 查找是否已有答案
     const existingAnswerIndex = test.answers.findIndex(
