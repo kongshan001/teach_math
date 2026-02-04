@@ -1,0 +1,98 @@
+<view class="container">
+  <view class="filters">
+    <view 
+      class="filter {{currentFilter === 'all' ? 'active' : ''}}" 
+      bindtap="changeFilter" 
+      data-filter="all"
+    >
+      全部
+    </view>
+    <view 
+      class="filter {{currentFilter === 'addition' ? 'active' : ''}}" 
+      bindtap="changeFilter" 
+      data-filter="addition"
+    >
+      加减法
+    </view>
+    <view 
+      class="filter {{currentFilter === 'multiplication' ? 'active' : ''}}" 
+      bindtap="changeFilter" 
+      data-filter="multiplication"
+    >
+      乘法
+    </view>
+    <view 
+      class="filter {{currentFilter === 'composite' ? 'active' : ''}}" 
+      bindtap="changeFilter" 
+      data-filter="composite"
+    >
+      复合运算
+    </view>
+    <view 
+      class="filter {{currentFilter === 'wrong' ? 'active' : ''}}" 
+      bindtap="changeFilter" 
+      data-filter="wrong"
+    >
+      错题集
+    </view>
+  </view>
+
+  <view class="records" wx:if="{{records.length > 0}}">
+    <view 
+      class="record-item" 
+      wx:for="{{records}}" 
+      wx:key="testId"
+      bindtap="showRecordDetail"
+      data-test-id="{{item.testId}}"
+    >
+      <view class="record-header">
+        <text class="record-date">{{item.date}}</text>
+        <text class="record-score">{{item.score}}</text>
+      </view>
+      <view class="record-detail">
+        {{item.correctCount}}/{{item.totalCount}} 题正确 | 用时 {{item.totalTimeText}}
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:else>
+    <text>暂无记录</text>
+  </view>
+
+  <button class="btn-back" bindtap="goBack">返回首页</button>
+</view>
+
+<!-- 详情弹窗 -->
+<view class="modal" wx:if="{{showModal}}">
+  <view class="modal-mask" bindtap="closeModal"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <text class="modal-title">答题详情</text>
+      <text class="close-btn" bindtap="closeModal">×</text>
+    </view>
+    <scroll-view class="modal-body" scroll-y>
+      <view class="record-info">
+        <text>测试时间：{{currentRecord.date}}</text>
+        <text>题目数量：{{currentRecord.settings.questionCount}}</text>
+        <text>总用时：{{currentRecord.totalTimeText}}</text>
+        <text>得分：{{currentRecord.score}}</text>
+      </view>
+      <view class="questions">
+        <view 
+          class="question-item {{getStatusClass(q)}}" 
+          wx:for="{{currentRecord.questions}}" 
+          wx:key="index"
+        >
+          <view class="question-text">
+            {{q.isCorrect ? '✓' : '✗'}} {{index + 1}}. {{q.question}}
+            <text class="status-label">{{getStatusLabel(q)}}</text>
+          </view>
+          <view class="question-detail">
+            你的答案: {{q.userAnswer}} | 正确答案: {{q.correctAnswer}} | 用时: {{q.timeSpent}}秒
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+    <button class="btn-delete" bindtap="deleteCurrentRecord">删除记录</button>
+  </view>
+</view>
