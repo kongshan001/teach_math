@@ -14,6 +14,39 @@ Object.defineProperty(window, 'currentTest', {
     get() { return testState; }
 });
 
+// 暴露必要的函数到 window 对象
+window.playAlarm = playAlarm;
+window.generateUUID = generateUUID;
+window.formatTime = formatTime;
+window.saveTestRecord = saveTestRecord;
+window.loadRecords = loadRecords;
+window.deleteRecord = deleteRecord;
+window.showPage = showPage;
+window.resetHome = resetHome;
+window.showFeedback = showFeedback;
+window.clearFeedback = clearFeedback;
+window.setInputState = setInputState;
+window.updateProgressInfo = updateProgressInfo;
+window.updateButtons = updateButtons;
+window.showModal = showModal;
+window.hideModal = hideModal;
+window.submitAnswer = submitAnswer;
+window.modifyAnswer = modifyAnswer;
+window.nextQuestion = nextQuestion;
+window.startTest = startTestCore;
+window.showQuestion = showQuestion;
+window.showResult = showResult;
+window.showResultDetail = showResultDetailCore;
+window.showRecords = showRecords;
+window.showRecordDetail = showRecordDetail;
+window.closeDetailModal = closeDetailModal;
+window.deleteCurrentRecord = deleteCurrentRecord;
+window.startTimer = startTimer;
+window.stopTimer = stopTimer;
+window.updateTimerDisplay = updateTimerDisplay;
+window.getTimeLeft = getTimeLeft;
+window.getMaxTime = getMaxTime;
+
 // 日志系统
 function log(message, type = 'info') {
     console.log(`[${type.toUpperCase()}] ${message}`);
