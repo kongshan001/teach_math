@@ -106,14 +106,23 @@ Page({
   },
 
   onTimerTimeout() {
+    console.log('=== 计时器超时 ===');
+    
+    // 设置答案为无效值
     this.setData({
+      answer: '0',
       inputDisabled: true,
       inputError: true,
-      showModify: true
+      showModify: true,
+      feedback: '✗ 时间到！',
+      feedbackClass: 'error',
+      showNext: true
     });
 
-    // 自动提交错误答案
-    this.submitAnswer(0);
+    // 延迟提交，确保数据已更新
+    setTimeout(() => {
+      this.submitAnswer();
+    }, 100);
   },
 
   onAnswerInput(e) {
@@ -124,35 +133,31 @@ Page({
     });
   },
 
-  submitAnswer(userAnswerOverride = null) {
+  submitAnswer(e) {
     const inputAnswer = this.data.answer;
     console.log('=== 提交答案前 ===');
     console.log('inputAnswer原始值:', JSON.stringify(inputAnswer));
     console.log('inputAnswer长度:', inputAnswer ? inputAnswer.length : 'null/undefined');
+    console.log('event对象:', e ? JSON.stringify(e) : '无');
     
     let answer;
     
-    if (userAnswerOverride !== null) {
-      answer = userAnswerOverride;
-      console.log('使用覆盖答案:', answer);
+    // 统一解析方式，无论是否超时
+    if (inputAnswer === '' || inputAnswer === undefined || inputAnswer === null) {
+      answer = NaN;
+      console.log('输入为空，设置为NaN');
     } else {
-      // 更健壮的解析方式
-      if (inputAnswer === '' || inputAnswer === undefined || inputAnswer === null) {
+      // 先trim空格，然后用Number转换
+      const trimmed = String(inputAnswer).trim();
+      const numberValue = Number(trimmed);
+      
+      // 检查是否是有效数字且不是NaN
+      if (isNaN(numberValue) || !isFinite(numberValue)) {
         answer = NaN;
-        console.log('输入为空，设置为NaN');
+        console.log('转换失败或不是有效数字:', trimmed);
       } else {
-        // 先trim空格，然后用Number转换
-        const trimmed = String(inputAnswer).trim();
-        const numberValue = Number(trimmed);
-        
-        // 检查是否是有效数字且不是NaN
-        if (isNaN(numberValue) || !isFinite(numberValue)) {
-          answer = NaN;
-          console.log('转换失败或不是有效数字:', trimmed);
-        } else {
-          answer = numberValue;
-          console.log('转换成功:', trimmed, '->', answer);
-        }
+        answer = numberValue;
+        console.log('转换成功:', trimmed, '->', answer);
       }
     }
     
