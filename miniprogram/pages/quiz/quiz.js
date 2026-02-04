@@ -41,6 +41,12 @@ Page({
     const test = app.globalData.currentTest;
     const question = test.questions[test.currentIndex];
 
+    console.log('=== 加载题目 ===');
+    console.log('当前题号:', test.currentIndex);
+    console.log('题目:', question.question);
+    console.log('正确答案:', question.answer, typeof question.answer);
+    console.log('答案类型检查:', typeof question.answer === 'number');
+
     this.setData({
       currentIndex: test.currentIndex,
       totalQuestions: test.questions.length,
@@ -117,10 +123,30 @@ Page({
   },
 
   submitAnswer(userAnswerOverride = null) {
-    const answer = userAnswerOverride !== null ? userAnswerOverride : parseInt(this.data.answer);
+    const inputAnswer = this.data.answer;
+    let answer;
+    
+    if (userAnswerOverride !== null) {
+      answer = userAnswerOverride;
+    } else {
+      if (inputAnswer === '' || inputAnswer === undefined || inputAnswer === null) {
+        answer = NaN;
+      } else {
+        const parsed = parseInt(inputAnswer);
+        answer = isNaN(parsed) ? NaN : parsed;
+      }
+    }
+    
     const test = app.globalData.currentTest;
     const question = test.questions[test.currentIndex];
     const isCorrect = answer === question.answer;
+
+    console.log('=== 答题调试信息 ===');
+    console.log('用户输入:', inputAnswer, typeof inputAnswer);
+    console.log('转换后答案:', answer, typeof answer);
+    console.log('正确答案:', question.answer, typeof question.answer);
+    console.log('是否正确:', isCorrect);
+    console.log('答案比较:', answer, '===', question.answer, '=', answer === question.answer);
 
     // 查找是否已有答案
     const existingAnswerIndex = test.answers.findIndex(
