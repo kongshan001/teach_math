@@ -1,6 +1,11 @@
 # 小学数学题库测试系统
 
+[![GitHub stars](https://img.shields.io/github/stars/kongshan001/teach_math?style=social)](https://github.com/kongshan001/teach_math)
+[![GitHub forks](https://img.shields.io/github/forks/kongshan001/teach_math?style=social)](https://github.com/kongshan001/teach_math)
+
 基于浏览器的小学数学练习工具，支持多种题型、计时功能和历史记录复盘。
+
+[GitHub 仓库地址](https://github.com/kongshan001/teach_math)
 
 ## 功能特性
 
