@@ -16,11 +16,20 @@ export function showResultDetail(record) {
     `;
 
     record.questions.forEach((q, index) => {
+        let statusClass = q.isCorrect ? 'correct' : 'incorrect';
+        let statusText = q.isCorrect ? '✓' : '✗';
+        let statusLabel = !q.isCorrect ? '<strong style="color: #dc3545;">（错误）</strong>' : '';
+        
+        if (q.hadError && q.isCorrect) {
+            statusClass = 'correct-but-mistake';
+            statusLabel = '<strong style="color: #ffa502;">（曾经错过）</strong>';
+        }
+        
         html += `
-            <div class="question-review ${q.isCorrect ? 'correct' : 'incorrect'}">
+            <div class="question-review ${statusClass}">
                 <div class="review-question">
-                    ${q.isCorrect ? '✓' : '✗'} ${index + 1}. ${q.question}
-                    ${!q.isCorrect ? '<strong style="color: #dc3545;">（错误）</strong>' : ''}
+                    ${statusText} ${index + 1}. ${q.question}
+                    ${statusLabel}
                 </div>
                 <div class="review-answer">
                     你的答案: ${q.userAnswer} | 
@@ -89,11 +98,20 @@ export function showRecordDetail(testId) {
     `;
 
     record.questions.forEach((q, index) => {
+        let statusClass = q.isCorrect ? 'correct' : 'incorrect';
+        let statusText = q.isCorrect ? '✓' : '✗';
+        let statusLabel = !q.isCorrect ? '<strong style="color: #dc3545;">（错误）</strong>' : '';
+        
+        if (q.hadError && q.isCorrect) {
+            statusClass = 'correct-but-mistake';
+            statusLabel = '<strong style="color: #ffa502;">（曾经错过）</strong>';
+        }
+        
         html += `
-            <div class="question-review ${q.isCorrect ? 'correct' : 'incorrect'}">
+            <div class="question-review ${statusClass}">
                 <div class="review-question">
-                    ${q.isCorrect ? '✓' : '✗'} ${index + 1}. ${q.question}
-                    ${!q.isCorrect ? '<strong style="color: #dc3545;">（错误）</strong>' : ''}
+                    ${statusText} ${index + 1}. ${q.question}
+                    ${statusLabel}
                 </div>
                 <div class="review-answer">
                     你的答案: ${q.userAnswer} | 

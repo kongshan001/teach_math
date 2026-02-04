@@ -318,6 +318,11 @@ input[type="checkbox"] {
     border-left: 4px solid #28a745;
 }
 
+.question-review.correct-but-mistake {
+    border-left: 4px solid #ffa502;
+    background: #fff8e1;
+}
+
 .question-review.incorrect {
     border-left: 4px solid #dc3545;
     background: #fff5f5;

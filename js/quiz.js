@@ -9,24 +9,49 @@ export function submitAnswer() {
     const isCorrect = userAnswer === question.answer;
     const timeSpent = getMaxTime() - getTimeLeft();
 
-    currentTest.answers.push({
-        questionId: question.id,
-        question: question.question,
-        userAnswer: userAnswer,
-        correctAnswer: question.answer,
-        isCorrect: isCorrect,
-        type: question.type,
-        difficulty: question.difficulty,
-        timeLimit: question.timeLimit,
-        timeSpent: timeSpent
-    });
+    const existingAnswerIndex = currentTest.answers.findIndex(
+        a => a.questionId === question.id
+    );
+
+    if (existingAnswerIndex !== -1) {
+        currentTest.answers[existingAnswerIndex] = {
+            ...currentTest.answers[existingAnswerIndex],
+            userAnswer: userAnswer,
+            isCorrect: isCorrect,
+            timeSpent: currentTest.answers[existingAnswerIndex].timeSpent + timeSpent,
+            hadError: currentTest.answers[existingAnswerIndex].hadError || !isCorrect
+        };
+        
+        if (isCorrect && !currentTest.answers[existingAnswerIndex].wasCorrect) {
+            currentTest.correctCount++;
+        }
+        
+        currentTest.answers[existingAnswerIndex].wasCorrect = isCorrect;
+    } else {
+        currentTest.answers.push({
+            questionId: question.id,
+            question: question.question,
+            userAnswer: userAnswer,
+            correctAnswer: question.answer,
+            isCorrect: isCorrect,
+            type: question.type,
+            difficulty: question.difficulty,
+            timeLimit: question.timeLimit,
+            timeSpent: timeSpent,
+            hadError: !isCorrect,
+            wasCorrect: isCorrect
+        });
+
+        if (isCorrect) {
+            currentTest.correctCount++;
+        }
+    }
 
     stopTimer();
     setInputState(true, !isCorrect);
     updateProgressInfo();
 
     if (isCorrect) {
-        currentTest.correctCount++;
         showFeedback('✓ 正确！', 'success');
         updateButtons(false, false);
         setTimeout(() => {
@@ -40,20 +65,23 @@ export function submitAnswer() {
 
 // 修改答案
 export function modifyAnswer() {
-    const answer = currentTest.answers.pop();
-    currentTest.correctCount--;
-    
     const input = document.getElementById('answerInput');
-    input.value = answer.userAnswer;
     input.disabled = false;
     input.classList.remove('error');
+    input.focus();
     
     window.clearFeedback();
     updateButtons(false, false);
     
-    const timeLeft = answer.timeLimit - answer.timeSpent;
-    const maxTime = answer.timeLimit;
-    window.startTimer(timeLeft);
+    const question = currentTest.questions[currentTest.currentIndex];
+    const existingAnswer = currentTest.answers.find(a => a.questionId === question.id);
+    
+    if (existingAnswer) {
+        const timeLeft = existingAnswer.timeLimit - existingAnswer.timeSpent;
+        window.startTimer(timeLeft);
+    } else {
+        window.startTimer(question.timeLimit);
+    }
 }
 
 // 下一题
