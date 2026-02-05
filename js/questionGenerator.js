@@ -56,7 +56,7 @@ export function generateMultiplication() {
 // 复合运算生成器
 export function generateComposite() {
     let question, answer, difficulty;
-    const useTwoSteps = Math.random() > 0.3;
+    const useTwoSteps = Math.random() < 0.05;
 
     if (useTwoSteps) {
         const template = Math.floor(Math.random() * 6);
