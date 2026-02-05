@@ -5,24 +5,44 @@ function generateAddSubtraction() {
   let a, b, answer, question, difficulty;
 
   if (isAddition) {
-    const carry = Math.random() > 0.5;
+    // 增加进位加法难度，数字范围 10-100
+    const carry = Math.random() > 0.0;
     if (carry) {
-      a = Math.floor(Math.random() * 50) + 1;
-      b = Math.floor(Math.random() * (100 - a)) + 1;
+      // 难：两位数进位加法，数字 10-90
+      a = Math.floor(Math.random() * 81) + 10;  // 10-90
+      const maxB = Math.min(99 - a, 90);
+      b = Math.floor(Math.random() * maxB) + 10;  // 确保结果在100以内且都是两位数
+      difficulty = 2;
     } else {
-      a = Math.floor(Math.random() * 9) + 1;
-      b = Math.floor(Math.random() * (10 - a));
+      // 简单：个位数加法
+      a = Math.floor(Math.random() * 8) + 2;
+      b = Math.floor(Math.random() * (9 - a)) + 1;
+      difficulty = 1;
     }
     answer = a + b;
     question = `${a} + ${b} =`;
-    difficulty = carry ? 2 : 1;
   } else {
-    a = Math.floor(Math.random() * 99) + 1;
-    b = Math.floor(Math.random() * a);
-    const hasBorrow = (a % 10) < (b % 10);
+    // 减法：增加退位减法比例和数字范围
+    const useHardSubtraction = Math.random() > 0.3;  // 70% 难题
+    if (useHardSubtraction) {
+      // 难：两位数减两位数，必有退位
+      a = Math.floor(Math.random() * 50) + 50;  // 50-99
+      // 确保有退位：个位小于减数的个位
+      const aUnit = a % 10;
+      b = Math.floor(Math.random() * (a - 10)) + 10;  // 10 到 a-1
+      // 确保退位
+      while ((a % 10) >= (b % 10)) {
+        b = Math.floor(Math.random() * (a - 10)) + 10;
+      }
+      difficulty = 2;
+    } else {
+      // 简单：不退位减法
+      a = Math.floor(Math.random() * 50) + 10;  // 10-59
+      b = Math.floor(Math.random() * (a % 10 + 1));  // 不超过个位数
+      difficulty = 1;
+    }
     answer = a - b;
     question = `${a} - ${b} =`;
-    difficulty = hasBorrow ? 2 : 1;
   }
 
   return {
@@ -36,10 +56,24 @@ function generateAddSubtraction() {
 }
 
 function generateMultiplication() {
-  const a = Math.floor(Math.random() * 9) + 1;
-  const b = Math.floor(Math.random() * 9) + 1;
+  // 限制在99乘法表（1-9 × 1-9）
+  // 增加大数乘法比例，偏向 6-9 的乘法
+  const useHardMultiplication = Math.random() > 0.4;  // 60% 难题
+  let a, b, difficulty;
+  
+  if (useHardMultiplication) {
+    // 难：两个数都在 6-9
+    a = Math.floor(Math.random() * 4) + 6;  // 6-9
+    b = Math.floor(Math.random() * 4) + 6;  // 6-9
+    difficulty = 2;
+  } else {
+    // 简单：表内乘法，至少一个数 <=5
+    a = Math.floor(Math.random() * 5) + 1;  // 1-5
+    b = Math.floor(Math.random() * 9) + 1;  // 1-9
+    difficulty = 1;
+  }
+  
   const answer = a * b;
-  const difficulty = (a >= 6 || b >= 6) ? 2 : 1;
 
   return {
     id: generateUUID(),
@@ -53,67 +87,81 @@ function generateMultiplication() {
 
 function generateComposite() {
   let question, answer, difficulty;
-  const useTwoSteps = Math.random() > 0.3;
+  // 增加两步运算比例到 40%
+  const useTwoSteps = Math.random() < 0.4;
 
   if (useTwoSteps) {
     const template = Math.floor(Math.random() * 6);
     
     switch (template) {
-      case 0:
-        const a = Math.floor(Math.random() * 5) + 1;
-        const b = Math.floor(Math.random() * 5) + 1;
-        const c = Math.floor(Math.random() * 5) + 1;
+      case 0: {
+        // (a + b) × c，数字增大
+        const a = Math.floor(Math.random() * 15) + 5;   // 5-19
+        const b = Math.floor(Math.random() * 10) + 1;   // 1-10
+        const c = Math.floor(Math.random() * 5) + 2;    // 2-6
         answer = (a + b) * c;
         question = `(${a} + ${b}) × ${c} =`;
         break;
-      case 1:
-        const d = Math.floor(Math.random() * 9) + 1;
-        const e = Math.floor(Math.random() * d) + 1;
-        const f = Math.floor(Math.random() * 5) + 1;
+      }
+      case 1: {
+        // (d - e) + f，增加数字范围
+        const d = Math.floor(Math.random() * 30) + 20;  // 20-49
+        const e = Math.floor(Math.random() * (d - 10)) + 10;  // 10 到 d-1
+        const f = Math.floor(Math.random() * 20) + 5;   // 5-24
         answer = (d - e) + f;
         question = `(${d} - ${e}) + ${f} =`;
         break;
-      case 2:
-        const g = Math.floor(Math.random() * 5) + 2;
-        const h = Math.floor(Math.random() * 3) + 1;
+      }
+      case 2: {
+        // g × h - i，增加难度
+        const g = Math.floor(Math.random() * 7) + 3;    // 3-9
+        const h = Math.floor(Math.random() * 7) + 3;    // 3-9
         const product = g * h;
-        const i = Math.floor(Math.random() * (product - 1)) + 1;
+        const i = Math.floor(Math.random() * (product - 5)) + 5;
         answer = product - i;
         question = `${g} × ${h} - ${i} =`;
         break;
-      case 3:
-        const j = Math.floor(Math.random() * 4) + 1;
-        const k = Math.floor(Math.random() * 4) + 1;
-        const l = Math.floor(Math.random() * 4) + 1;
-        const m = Math.floor(Math.random() * 4) + 1;
+      }
+      case 3: {
+        // (j + k) × (l + m)，增加数字
+        const j = Math.floor(Math.random() * 15) + 5;   // 5-19
+        const k = Math.floor(Math.random() * 10) + 1;   // 1-10
+        const l = Math.floor(Math.random() * 8) + 2;    // 2-9
+        const m = Math.floor(Math.random() * 8) + 2;    // 2-9
         answer = (j + k) * (l + m);
         question = `(${j} + ${k}) × (${l} + ${m}) =`;
         difficulty = 3;
         break;
-      case 4:
-        const n = Math.floor(Math.random() * 6) + 2;
-        const o = Math.floor(Math.random() * (n - 1)) + 1;
-        const p = Math.floor(Math.random() * 5) + 1;
+      }
+      case 4: {
+        // n - o + p，连加减
+        const n = Math.floor(Math.random() * 40) + 20;  // 20-59
+        const o = Math.floor(Math.random() * (n - 10)) + 5;
+        const p = Math.floor(Math.random() * 20) + 5;
         answer = n - o + p;
         question = `${n} - ${o} + ${p} =`;
         break;
-      case 5:
-        const q = Math.floor(Math.random() * 4) + 1;
-        const r = Math.floor(Math.random() * 4) + 1;
-        const s = Math.floor(Math.random() * 4) + 1;
-        const t = Math.floor(Math.random() * 4) + 1;
+      }
+      case 5: {
+        // q × r + s × t，两个乘法相加
+        const q = Math.floor(Math.random() * 6) + 4;    // 4-9
+        const r = Math.floor(Math.random() * 6) + 4;    // 4-9
+        const s = Math.floor(Math.random() * 5) + 2;    // 2-6
+        const t = Math.floor(Math.random() * 5) + 2;    // 2-6
         const left = q * r;
         const right = s * t;
         answer = left + right;
         question = `${q} × ${r} + ${s} × ${t} =`;
         break;
+      }
     }
     if (!difficulty) difficulty = 2;
   } else {
-    const a = Math.floor(Math.random() * 4) + 1;
-    const b = Math.floor(Math.random() * 4) + 1;
-    const c = Math.floor(Math.random() * 4) + 1;
-    const d = Math.floor(Math.random() * 4) + 1;
+    // 默认也增加数字范围
+    const a = Math.floor(Math.random() * 15) + 5;   // 5-19
+    const b = Math.floor(Math.random() * 10) + 2;   // 2-11
+    const c = Math.floor(Math.random() * 8) + 2;    // 2-9
+    const d = Math.floor(Math.random() * 8) + 2;    // 2-9
     
     answer = (a + b) * (c + d);
     question = `(${a} + ${b}) × (${c} + ${d}) =`;
