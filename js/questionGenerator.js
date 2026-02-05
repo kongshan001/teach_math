@@ -6,7 +6,7 @@ export function generateAddSubtraction() {
     let a, b, answer, question, difficulty;
 
     if (isAddition) {
-        const carry = Math.random() > 0.5;
+        const carry = Math.random() > 0.0;
         if (carry) {
             a = Math.floor(Math.random() * 50) + 1;
             b = Math.floor(Math.random() * (100 - a)) + 1;
@@ -155,10 +155,10 @@ export function generateQuestions(count) {
     for (let i = 0; i < count; i++) {
         const tmp = Math.random() * 100;
         let type;
-        if (tmp < 10){
+        if (tmp < 1){
             type = "addition";
         }
-        else if (tmp < 20){
+        else if (tmp < 2){
             type = "multiplication";
         }
         else{
