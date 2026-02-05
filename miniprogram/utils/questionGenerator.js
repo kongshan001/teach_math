@@ -178,11 +178,69 @@ function generateComposite() {
   };
 }
 
-function generateQuestions(count) {
+function generateQuestions(count, minHardQuestions = 2) {
   const questions = [];
-  const types = ['addition', 'multiplication', 'composite'];
   
-  for (let i = 0; i < count; i++) {
+  // 保底难题数量（不超过总题数）
+  const guaranteedHard = Math.min(minHardQuestions, count);
+  
+  // 先生成保底难题（难度 >= 2）
+  for (let i = 0; i < guaranteedHard; i++) {
+    let question;
+    // 80% 概率生成复合运算（难度3），20% 生成中等难度
+    if (Math.random() < 0.8) {
+      question = generateComposite();
+    } else {
+      // 强制生成中等难度的加减法或乘法
+      if (Math.random() > 0.5) {
+        // 生成进位加法或退位减法
+        const isAddition = Math.random() > 0.5;
+        let a, b, answer, qText;
+        if (isAddition) {
+          a = Math.floor(Math.random() * 40) + 50;  // 50-89
+          b = Math.floor(Math.random() * (99 - a - 10)) + 11;  // 确保进位
+          while ((a % 10) + (b % 10) < 10) {
+            b = Math.floor(Math.random() * (99 - a - 10)) + 11;
+          }
+          answer = a + b;
+          qText = `${a} + ${b} =`;
+        } else {
+          a = Math.floor(Math.random() * 40) + 50;  // 50-89
+          b = Math.floor(Math.random() * (a - 20)) + 10;
+          while ((a % 10) >= (b % 10)) {
+            b = Math.floor(Math.random() * (a - 20)) + 10;
+          }
+          answer = a - b;
+          qText = `${a} - ${b} =`;
+        }
+        question = {
+          id: generateUUID(),
+          question: qText,
+          answer,
+          type: 'addition',
+          difficulty: 2,
+          timeLimit: 60
+        };
+      } else {
+        // 生成6-9的大数乘法
+        const a = Math.floor(Math.random() * 4) + 6;
+        const b = Math.floor(Math.random() * 4) + 6;
+        question = {
+          id: generateUUID(),
+          question: `${a} × ${b} =`,
+          answer: a * b,
+          type: 'multiplication',
+          difficulty: 2,
+          timeLimit: 60
+        };
+      }
+    }
+    questions.push(question);
+  }
+  
+  // 生成剩余题目（随机难度）
+  const types = ['addition', 'multiplication', 'composite'];
+  for (let i = guaranteedHard; i < count; i++) {
     const type = types[Math.floor(Math.random() * types.length)];
     let question;
     
