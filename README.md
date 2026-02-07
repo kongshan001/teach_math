@@ -180,7 +180,7 @@
 teach_math/
 ├── css/
 │   └── style.css          # 全局样式
-├── js/
+├── js/                    # Web版JavaScript模块
 │   ├── main.js            # 主入口
 │   ├── utils.js           # 工具函数
 │   ├── state.js           # 状态管理
@@ -195,12 +195,14 @@ teach_math/
 │   ├── app.js             # 小程序主文件
 │   ├── app.json           # 小程序配置
 │   ├── pages/             # 页面目录
+│   │   ├── index/         # 首页
+│   │   ├── quiz/          # 答题页
+│   │   ├── result/        # 结果页
+│   │   └── records/       # 历史记录页
 │   └── utils/             # 工具目录
 ├── index.html             # Web版主页面
 └── README.md              # 项目说明
 ```
-
-### 核心功能模块
 
 ### 核心功能模块
 - **questionGenerator.js**: 题目生成器
@@ -232,6 +234,49 @@ teach_math/
   - showPage(): 页面切换
   - showFeedback(): 显示反馈
   - updateProgressInfo(): 更新进度
+
+## 双版本说明
+
+本项目包含 Web 版本和微信小程序版本，两个版本功能对等，共享核心逻辑。
+
+### 技术栈对比
+
+| 特性 | Web 版 | 小程序版 |
+|------|--------|----------|
+| **前端框架** | 纯 HTML5 + CSS3 + ES6 | 微信小程序原生框架 |
+| **模块化** | ES6 import/export | CommonJS require/module.exports |
+| **样式单位** | px/rem | rpx |
+| **数据存储** | localStorage | wx.setStorageSync |
+| **键盘回车** | ✅ 支持 | ❌ 不支持 |
+| **题目生成** | ✅ | ✅ |
+| **计时器** | ✅ | ✅ |
+| **答案修改** | ✅ | ✅ |
+| **历史记录** | ✅ | ✅ |
+
+### 本地运行
+
+**Web 版本**
+```bash
+python3 -m http.server 8080
+# 访问 http://localhost:8080
+```
+
+**小程序版本**
+1. 下载并安装微信开发者工具
+2. 打开 `miniprogram` 目录
+3. 配置 AppID
+4. 点击"编译"按钮
+
+### 部署方式
+
+**Web 版**
+- 推送代码到 GitHub 后自动部署到 GitHub Pages
+- 访问: https://kongshan001.github.io/teach_math/
+
+**小程序版**
+1. 在微信开发者工具中点击"上传"
+2. 在微信公众平台提交审核
+3. 审核通过后发布
 
 ## 更新日志
 
