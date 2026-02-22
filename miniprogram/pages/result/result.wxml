@@ -1,0 +1,15 @@
+<view class="container">
+  <view class="score-card">
+    <view class="score">{{score}}</view>
+    <view class="detail">
+      <text>{{correctCount}}</text> / <text>{{totalCount}}</text> 题正确
+    </view>
+    <view class="time">总用时: {{totalTime}}</view>
+  </view>
+
+  <view class="buttons">
+    <button class="btn btn-primary" bindtap="showResultDetail">查看详情</button>
+    <button class="btn btn-secondary" bindtap="resetHome">重新测试</button>
+    <button class="btn btn-secondary" bindtap="showRecords">查看历史记录</button>
+  </view>
+</view>

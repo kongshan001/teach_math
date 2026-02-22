@@ -1,0 +1,55 @@
+<view class="container">
+  <view class="progress">
+    <text>第 {{currentIndex + 1}} 题 / 共 {{totalQuestions}} 题</text>
+    <text>当前得分: {{currentScore}}</text>
+  </view>
+
+  <view class="question-card">
+    <view class="question">{{question}}</view>
+    
+    <view class="timer-bar">
+      <view class="timer-progress" style="width: {{progress}}%"></view>
+    </view>
+    <view class="timer-text {{timerClass}}">{{timeText}}</view>
+  </view>
+
+  <view class="input-group">
+    <input 
+      class="input {{inputError ? 'error' : ''}}" 
+      type="number" 
+      placeholder="请输入答案"
+      value="{{answer}}"
+      bindinput="onAnswerInput"
+      disabled="{{inputDisabled}}"
+      focus="{{inputFocus}}"
+    />
+  </view>
+
+  <view class="buttons">
+    <button 
+      class="btn btn-primary" 
+      bindtap="submitAnswer"
+      disabled="{{submitDisabled}}"
+    >
+      提交答案
+    </button>
+    <button 
+      class="btn btn-secondary" 
+      bindtap="modifyAnswer"
+      wx:if="{{showModify}}"
+    >
+      修改答案
+    </button>
+    <button 
+      class="btn btn-primary" 
+      bindtap="nextQuestion"
+      wx:if="{{showNext}}"
+    >
+      下一题
+    </button>
+  </view>
+
+  <view class="feedback {{feedbackClass}}" wx:if="{{feedback}}">
+    {{feedback}}
+  </view>
+</view>

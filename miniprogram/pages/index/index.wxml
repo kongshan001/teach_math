@@ -1,0 +1,27 @@
+<view class="container">
+  <view class="title">小学数学题库测试</view>
+  
+  <view class="form">
+    <view class="form-item">
+      <text class="label">题目数量</text>
+      <input 
+        class="input" 
+        type="number" 
+        placeholder="请输入题目数量" 
+        value="{{questionCount}}"
+        bindinput="onQuestionCountInput"
+      />
+    </view>
+    
+    <view class="form-item checkbox">
+      <checkbox 
+        checked="{{enableTimer}}" 
+        bindtap="onTimerToggle"
+      />
+      <text class="checkbox-label">启用总计时器</text>
+    </view>
+    
+    <button class="btn btn-primary" bindtap="startTest">开始测试</button>
+    <button class="btn btn-secondary" bindtap="showRecords">查看历史记录</button>
+  </view>
+</view>

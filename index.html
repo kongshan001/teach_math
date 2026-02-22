@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小学数学题库测试</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>小学数学题库测试</h1>
+
+        <!-- 首页 -->
+        <div id="homePage" class="page active">
+            <div class="input-group">
+                <label>题目数量 (N)</label>
+                <input type="number" id="questionCount" min="1" max="100" value="20">
+            </div>
+            <div class="input-group checkbox-group">
+                <input type="checkbox" id="enableTimer">
+                <label for="enableTimer">启用总计时器</label>
+            </div>
+            <button class="btn btn-primary" id="startTestBtn">开始测试</button>
+            <button class="btn btn-secondary" id="showRecordsBtn">查看历史记录</button>
+        </div>
+
+        <!-- 答题页 -->
+        <div id="quizPage" class="page">
+            <div class="progress-info">
+                <span>第 <span id="currentQuestionNum">1</span> 题 / 共 <span id="totalQuestions">20</span> 题</span>
+                <span>当前得分: <span id="currentScore">0</span></span>
+            </div>
+            <div class="question-display">
+                <div class="question-text" id="questionText">2 + 3 =</div>
+                <div class="timer-bar">
+                    <div class="timer-progress" id="timerProgress"></div>
+                </div>
+                <div class="timer-text" id="timerText">30秒</div>
+            </div>
+            <div class="input-group">
+                <input type="number" id="answerInput" placeholder="请输入答案">
+            </div>
+            <button class="btn btn-primary" id="submitAnswerBtn">提交答案</button>
+            <button class="btn btn-secondary" id="modifyBtn" style="display: none;">修改答案</button>
+            <button class="btn btn-secondary" id="nextBtn" style="display: none;">下一题</button>
+            <div class="feedback" id="feedback"></div>
+        </div>
+
+        <!-- 结果页 -->
+        <div id="resultPage" class="page">
+            <div class="score-display">
+                <div class="final-score" id="finalScore">100</div>
+                <div class="score-detail">
+                    <span id="correctCount">20</span> / <span id="totalCount">20</span> 题正确
+                </div>
+            </div>
+            <div class="score-detail" id="totalTimeDisplay">总用时: 0分0秒</div>
+            <button class="btn btn-primary" id="showResultDetailBtn">查看详情</button>
+            <button class="btn btn-secondary" id="resetHomeBtn">重新测试</button>
+            <button class="btn btn-secondary" id="showRecordsBtn2">查看历史记录</button>
+        </div>
+
+        <!-- 历史记录页 -->
+        <div id="recordsPage" class="page">
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">全部</button>
+                <button class="filter-btn" data-filter="addition">加减法</button>
+                <button class="filter-btn" data-filter="multiplication">乘法</button>
+                <button class="filter-btn" data-filter="composite">复合运算</button>
+                <button class="filter-btn" data-filter="wrong">错题集</button>
+            </div>
+            <div class="records-list" id="recordsList"></div>
+            <button class="btn btn-secondary" id="resetHomeBtn2" style="margin-top: 20px;">返回首页</button>
+        </div>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">答题详情</h2>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <div id="detailContent"></div>
+            <button class="btn btn-danger" id="deleteRecordBtn" style="margin-top: 20px;">删除记录</button>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+    <script>
+        // 添加加载指示器
+        console.log('HTML 加载完成，等待模块加载...');
+        
+        // 模块加载完成的指示器
+        window.appLoaded = false;
+        
+        // 检查应用是否加载完成
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM 加载完成');
+            
+            // 5秒后检查应用是否加载
+            setTimeout(() => {
+                if (!window.appLoaded) {
+                    console.error('应用加载超时！');
+                    alert('应用加载超时，请刷新页面重试');
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
