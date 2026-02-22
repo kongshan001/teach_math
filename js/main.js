@@ -174,8 +174,10 @@ function handleStartTest() {
     try {
         const count = parseInt(document.getElementById('questionCount').value);
         const enableTimer = document.getElementById('enableTimer').checked;
-        log(`题目数量: ${count}, 启用计时器: ${enableTimer}`);
-        startTestCore(count, enableTimer);
+        const grade = parseInt(document.getElementById('gradeSelect').value);
+        const difficultyLevel = document.getElementById('difficultySelect').value;
+        log(`年级: ${grade}, 难度: ${difficultyLevel}, 题目数量: ${count}, 启用计时器: ${enableTimer}`);
+        startTestCore(count, enableTimer, grade, difficultyLevel);
     } catch (error) {
         log(`开始测试失败: ${error.message}`, 'error');
         alert('开始测试失败: ' + error.message);

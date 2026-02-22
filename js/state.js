@@ -5,7 +5,9 @@ export let currentTest = {
     correctCount: 0,
     answers: [],
     startTime: null,
-    enableTimer: false
+    enableTimer: false,
+    grade: 1,
+    difficultyLevel: 'basic'
 };
 
 // 计时器相关

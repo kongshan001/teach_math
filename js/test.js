@@ -1,19 +1,21 @@
-import { generateQuestions } from './questionGenerator.js';
+import { generateQuestions, generateQuestionsByGrade } from './questionGenerator.js';
 import { resetTestState, currentTest } from './state.js';
 import { showPage, showFeedback, clearFeedback, setInputState, updateButtons } from './ui.js';
 import { startTimer } from './timer.js';
 
 // 开始测试
-export function startTest(questionCount, enableTimer) {
+export function startTest(questionCount, enableTimer, grade = 1, difficultyLevel = 'basic') {
     if (questionCount < 1 || questionCount > 100) {
         alert('题目数量必须在 1-100 之间');
         return;
     }
 
     resetTestState();
-    currentTest.questions = generateQuestions(questionCount);
+    currentTest.questions = generateQuestionsByGrade(grade, difficultyLevel, questionCount);
     currentTest.startTime = Date.now();
     currentTest.enableTimer = enableTimer;
+    currentTest.grade = grade;
+    currentTest.difficultyLevel = difficultyLevel;
 
     showPage('quizPage');
     document.getElementById('totalQuestions').textContent = questionCount;
@@ -52,7 +54,9 @@ export function showResult() {
         date: new Date().toLocaleString('zh-CN'),
         settings: {
             questionCount: currentTest.questions.length,
-            enableTimer: currentTest.enableTimer
+            enableTimer: currentTest.enableTimer,
+            grade: currentTest.grade,
+            difficultyLevel: currentTest.difficultyLevel
         },
         totalTime: totalTime,
         score: score,

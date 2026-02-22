@@ -287,3 +287,383 @@ export function generateQuestions(count, minHardQuestions = 2) {
 
     return questions;
 }
+
+// 按年级和难度生成题目
+export function generateQuestionsByGrade(grade, difficultyLevel, count) {
+    const questions = [];
+    
+    for (let i = 0; i < count; i++) {
+        questions.push(generateQuestionByGrade(grade, difficultyLevel));
+    }
+    
+    return questions;
+}
+
+function generateQuestionByGrade(grade, difficultyLevel) {
+    const difficulty = difficultyLevel === 'basic' ? 1 : difficultyLevel === 'improved' ? 2 : 3;
+    const timeLimit = difficulty === 1 ? 30 : difficulty === 2 ? 45 : 60;
+    const gradeDesc = `${getGradeName(grade)}-${getDifficultyName(difficultyLevel)}`;
+    
+    let question, answer, type, tags;
+    
+    switch (grade) {
+        case 1:
+            ({ question, answer, type, tags } = generateGrade1(difficultyLevel));
+            break;
+        case 2:
+            ({ question, answer, type, tags } = generateGrade2(difficultyLevel));
+            break;
+        case 3:
+            ({ question, answer, type, tags } = generateGrade3(difficultyLevel));
+            break;
+        case 4:
+            ({ question, answer, type, tags } = generateGrade4(difficultyLevel));
+            break;
+        case 5:
+            ({ question, answer, type, tags } = generateGrade5(difficultyLevel));
+            break;
+        case 6:
+            ({ question, answer, type, tags } = generateGrade6(difficultyLevel));
+            break;
+        default:
+            ({ question, answer, type, tags } = generateGrade1(difficultyLevel));
+    }
+    
+    return {
+        id: generateUUID(),
+        question,
+        answer,
+        type,
+        grade,
+        difficulty,
+        difficultyLevel,
+        timeLimit,
+        tags,
+        gradeDescription: gradeDesc
+    };
+}
+
+function getGradeName(grade) {
+    const names = { 1: '一年级', 2: '二年级', 3: '三年级', 4: '四年级', 5: '五年级', 6: '六年级' };
+    return names[grade] || '一年级';
+}
+
+function getDifficultyName(level) {
+    const names = { basic: '基础', improved: '提高', challenge: '挑战' };
+    return names[level] || '基础';
+}
+
+// 一年级题目生成
+function generateGrade1(difficultyLevel) {
+    const isAddition = Math.random() > 0.5;
+    let a, b, answer, question, type, tags;
+    
+    if (difficultyLevel === 'basic') {
+        a = Math.floor(Math.random() * 9) + 1;
+        b = Math.floor(Math.random() * (10 - a));
+        answer = a + b;
+        question = `${a} + ${b} =`;
+        type = 'addition';
+        tags = ['10以内加减法'];
+    } else if (difficultyLevel === 'improved') {
+        if (isAddition) {
+            a = Math.floor(Math.random() * 15) + 5;
+            b = Math.floor(Math.random() * (20 - a));
+            answer = a + b;
+            question = `${a} + ${b} =`;
+            type = 'addition';
+        } else {
+            a = Math.floor(Math.random() * 10) + 10;
+            b = Math.floor(Math.random() * (a - 1)) + 1;
+            answer = a - b;
+            question = `${a} - ${b} =`;
+            type = 'subtraction';
+        }
+        tags = ['20以内加减法'];
+    } else {
+        if (isAddition) {
+            a = Math.floor(Math.random() * 10) + 10;
+            b = Math.floor(Math.random() * 10) + 1;
+            while (a + b <= 10) {
+                a = Math.floor(Math.random() * 10) + 10;
+                b = Math.floor(Math.random() * 10) + 1;
+            }
+            answer = a + b;
+            question = `${a} + ${b} =`;
+            type = 'addition';
+        } else {
+            a = Math.floor(Math.random() * 10) + 10;
+            b = Math.floor(Math.random() * 10) + 1;
+            while (a <= b) {
+                a = Math.floor(Math.random() * 10) + 10;
+                b = Math.floor(Math.random() * 10) + 1;
+            }
+            answer = a - b;
+            question = `${a} - ${b} =`;
+            type = 'subtraction';
+        }
+        tags = ['20以内进位退位'];
+    }
+    
+    return { question, answer, type, tags };
+}
+
+// 二年级题目生成
+function generateGrade2(difficultyLevel) {
+    const isAddition = Math.random() > 0.5;
+    let a, b, c, answer, question, type, tags;
+    
+    if (difficultyLevel === 'basic') {
+        a = Math.floor(Math.random() * 9) * 10;
+        b = Math.floor(Math.random() * 9) * 10;
+        answer = a + b;
+        question = `${a} + ${b} =`;
+        type = 'addition';
+        tags = ['整十数加减法'];
+    } else if (difficultyLevel === 'improved') {
+        if (isAddition) {
+            a = Math.floor(Math.random() * 90) + 10;
+            b = Math.floor(Math.random() * (100 - a));
+            answer = a + b;
+            question = `${a} + ${b} =`;
+            type = 'addition';
+        } else {
+            a = Math.floor(Math.random() * 90) + 10;
+            b = Math.floor(Math.random() * (a - 10)) + 10;
+            answer = a - b;
+            question = `${a} - ${b} =`;
+            type = 'subtraction';
+        }
+        tags = ['两位数加减法'];
+    } else {
+        const useThreeNumbers = Math.random() > 0.5;
+        if (useThreeNumbers) {
+            if (isAddition) {
+                a = Math.floor(Math.random() * 50) + 10;
+                b = Math.floor(Math.random() * 50) + 10;
+                c = Math.floor(Math.random() * 50) + 10;
+                answer = a + b + c;
+                question = `${a} + ${b} + ${c} =`;
+            } else {
+                a = Math.floor(Math.random() * 50) + 30;
+                b = Math.floor(Math.random() * (a - 10)) + 10;
+                c = Math.floor(Math.random() * 10) + 1;
+                answer = a - b + c;
+                question = `${a} - ${b} + ${c} =`;
+            }
+        } else {
+            a = Math.floor(Math.random() * 50) + 30;
+            b = Math.floor(Math.random() * 20) + 10;
+            c = Math.floor(Math.random() * 20) + 5;
+            answer = a - b - c;
+            question = `${a} - ${b} - ${c} =`;
+        }
+        type = 'composite';
+        tags = ['连加连减'];
+    }
+    
+    return { question, answer, type, tags };
+}
+
+// 三年级题目生成
+function generateGrade3(difficultyLevel) {
+    let a, b, answer, question, type, tags;
+    
+    if (difficultyLevel === 'basic') {
+        a = Math.floor(Math.random() * 5) + 1;
+        b = Math.floor(Math.random() * 9) + 1;
+        answer = a * b;
+        question = `${a} × ${b} =`;
+        type = 'multiplication';
+        tags = ['表内乘法'];
+    } else if (difficultyLevel === 'improved') {
+        const isMultiplication = Math.random() > 0.3;
+        if (isMultiplication) {
+            a = Math.floor(Math.random() * 9) + 1;
+            b = Math.floor(Math.random() * 9) + 1;
+            answer = a * b;
+            question = `${a} × ${b} =`;
+            type = 'multiplication';
+            tags = ['表内乘法', '除法入门'];
+        } else {
+            a = Math.floor(Math.random() * 81) + 1;
+            b = Math.floor(Math.random() * 8) + 2;
+            answer = Math.floor(a / b);
+            question = `${a} ÷ ${b} =`;
+            type = 'division';
+            tags = ['除法入门'];
+        }
+    } else {
+        const typeChoice = Math.random();
+        if (typeChoice < 0.4) {
+            a = Math.floor(Math.random() * 90) + 10;
+            b = Math.floor(Math.random() * 8) + 2;
+            answer = a * b;
+            question = `${a} × ${b} =`;
+            type = 'multiplication';
+            tags = ['两位数乘一位数'];
+        } else if (typeChoice < 0.7) {
+            a = Math.floor(Math.random() * 5) + 2;
+            b = Math.floor(Math.random() * (a - 1)) + 2;
+            answer = a / b;
+            question = `${a}/${b}`;
+            type = 'fraction';
+            tags = ['分数认识'];
+        } else {
+            a = Math.floor(Math.random() * 9) + 1;
+            b = Math.floor(Math.random() * 9) + 1;
+            c = Math.floor(Math.random() * 9) + 1;
+            answer = a * b * c;
+            question = `${a} × ${b} × ${c} =`;
+            type = 'multiplication';
+            tags = ['连乘'];
+        }
+    }
+    
+    return { question, answer, type, tags };
+}
+
+// 四年级题目生成
+function generateGrade4(difficultyLevel) {
+    let a, b, c, answer, question, type, tags;
+    
+    if (difficultyLevel === 'basic') {
+        a = Math.floor(Math.random() * 900) + 100;
+        b = Math.floor(Math.random() * 90) + 10;
+        answer = a * b;
+        question = `${a} × ${b} =`;
+        type = 'multiplication';
+        tags = ['三位数乘两位数'];
+    } else if (difficultyLevel === 'improved') {
+        a = Math.floor(Math.random() * 900) + 100;
+        b = Math.floor(Math.random() * 89) + 10;
+        answer = Math.floor(a / b);
+        question = `${a} ÷ ${b} =`;
+        type = 'division';
+        tags = ['除数是两位数的除法'];
+    } else {
+        const typeChoice = Math.random();
+        if (typeChoice < 0.5) {
+            a = Math.floor(Math.random() * 20) + 5;
+            b = Math.floor(Math.random() * 20) + 5;
+            c = Math.floor(Math.random() * 10) + 1;
+            answer = (a + b) * c;
+            question = `(${a} + ${b}) × ${c} =`;
+        } else if (typeChoice < 0.8) {
+            a = Math.floor(Math.random() * 50) + 20;
+            b = Math.floor(Math.random() * 10) + 2;
+            c = Math.floor(Math.random() * 20) + 5;
+            answer = a * b + c;
+            question = `${a} × ${b} + ${c} =`;
+        } else {
+            a = Math.floor(Math.random() * 50) + 50;
+            b = Math.floor(Math.random() * 20) + 10;
+            c = Math.floor(Math.random() * 20) + 10;
+            answer = a - b * 2 - c;
+            question = `${a} - ${b} × 2 - ${c} =`;
+        }
+        type = 'composite';
+        tags = ['四则混合运算'];
+    }
+    
+    return { question, answer, type, tags };
+}
+
+// 五年级题目生成
+function generateGrade5(difficultyLevel) {
+    let a, b, answer, question, type, tags;
+    
+    if (difficultyLevel === 'basic') {
+        a = Math.floor(Math.random() * 90) + 10;
+        b = Math.floor(Math.random() * 90) + 10;
+        const decimals = Math.random() > 0.5 ? 1 : 2;
+        const aDecimal = Math.round((Math.random() * a) * 10) / 10;
+        const bDecimal = Math.round((Math.random() * b) * 10) / 10;
+        answer = Math.round((aDecimal + bDecimal) * 10) / 10;
+        question = `${aDecimal.toFixed(1)} + ${bDecimal.toFixed(1)} =`;
+        type = 'decimal';
+        tags = ['小数加减法'];
+    } else if (difficultyLevel === 'improved') {
+        a = Math.floor(Math.random() * 90) + 10;
+        b = Math.floor(Math.random() * 8) + 2;
+        const aDecimal = Math.round((Math.random() * a) * 10) / 10;
+        answer = Math.round(aDecimal * b * 10) / 10;
+        question = `${aDecimal.toFixed(1)} × ${b} =`;
+        type = 'decimal';
+        tags = ['小数乘除法'];
+    } else {
+        const numerator1 = Math.floor(Math.random() * 8) + 2;
+        const denominator1 = Math.floor(Math.random() * (numerator1 - 1)) + 2;
+        const numerator2 = Math.floor(Math.random() * 8) + 2;
+        const denominator2 = Math.floor(Math.random() * (numerator2 - 1)) + 2;
+        
+        const isAddition = Math.random() > 0.5;
+        if (isAddition) {
+            const commonDenom = denominator1 * denominator2;
+            answer = (numerator1 * denominator2 + numerator2 * denominator1) / commonDenom;
+            question = `${numerator1}/${denominator1} + ${numerator2}/${denominator2} =`;
+        } else {
+            const commonDenom = denominator1 * denominator2;
+            const numResult = Math.abs((numerator1 * denominator2 - numerator2 * denominator1) / commonDenom);
+            answer = numResult;
+            question = `${numerator1}/${denominator1} - ${numerator2}/${denominator2} =`;
+        }
+        type = 'fraction';
+        tags = ['分数加减法'];
+    }
+    
+    return { question, answer, type, tags };
+}
+
+// 六年级题目生成
+function generateGrade6(difficultyLevel) {
+    let a, b, answer, question, type, tags;
+    
+    if (difficultyLevel === 'basic') {
+        a = Math.floor(Math.random() * 20) + 2;
+        b = Math.floor(Math.random() * 20) + 2;
+        answer = a * b;
+        question = `${a}/${b}`;
+        type = 'fraction';
+        tags = ['分数乘法'];
+    } else if (difficultyLevel === 'improved') {
+        const isDivision = Math.random() > 0.5;
+        if (isDivision) {
+            a = Math.floor(Math.random() * 20) + 2;
+            b = Math.floor(Math.random() * 20) + 2;
+            c = Math.floor(Math.random() * 10) + 2;
+            answer = a / b / c;
+            question = `${a}/${b} ÷ ${c} =`;
+            type = 'fraction';
+            tags = ['分数除法'];
+        } else {
+            a = Math.floor(Math.random() * 90) + 10;
+            b = Math.floor(Math.random() * 50) + 10;
+            answer = a * b / 100;
+            question = `${a} 的 ${b}% =`;
+            type = 'percentage';
+            tags = ['百分数'];
+        }
+    } else {
+        const typeChoice = Math.random();
+        if (typeChoice < 0.5) {
+            a = Math.floor(Math.random() * 8) + 2;
+            b = Math.floor(Math.random() * 8) + 2;
+            c = Math.floor(Math.random() * 8) + 2;
+            d = Math.floor(Math.random() * 8) + 2;
+            answer = (a / b) * (c / d);
+            question = `${a}/${b} × ${c}/${d} =`;
+            type = 'fraction';
+            tags = ['分数乘除法混合'];
+        } else {
+            a = Math.floor(Math.random() * 9) + 2;
+            b = Math.floor(Math.random() * 9) + 2;
+            answer = a / b;
+            question = `已知 ${a}:${b} = ${a*10}:${b*10}，求比值`;
+            type = 'ratio';
+            tags = ['比例和比例尺'];
+        }
+    }
+    
+    return { question, answer, type, tags };
+}
