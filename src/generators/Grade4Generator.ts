@@ -7,7 +7,7 @@ export class Grade4Generator extends BaseGenerator {
     }
     
     generate(options: QuestionGeneratorOptions): Question[] {
-        const { count, difficultyLevel } = options;
+        const { count, difficultyLevel } = this.validateAndNormalizeOptions(options);
         const questions: Question[] = [];
         
         for (let i = 0; i < count; i++) {

@@ -7,7 +7,8 @@ export class Grade5Generator extends BaseGenerator {
     }
     
     generate(options: QuestionGeneratorOptions): Question[] {
-        const { count, difficultyLevel } = options;
+        // DEV-002: 使用参数验证
+        const { count, difficultyLevel } = this.validateAndNormalizeOptions(options);
         const questions: Question[] = [];
         
         for (let i = 0; i < count; i++) {
@@ -35,7 +36,8 @@ export class Grade5Generator extends BaseGenerator {
         
         const aDecimal = this.toDecimal(a, decimals);
         const bDecimal = this.toDecimal(b, decimals);
-        const answer = aDecimal + bDecimal;
+        // DEV-001: 修复小数精度问题，确保答案精确到两位小数
+        const answer = Math.round((aDecimal + bDecimal) * 100) / 100;
         const question = `${aDecimal.toFixed(decimals)} + ${bDecimal.toFixed(decimals)} =`;
         
         return this.createQuestion(question, answer, 'decimal', 5, 'basic', ['小数加减法']);
@@ -48,7 +50,8 @@ export class Grade5Generator extends BaseGenerator {
         
         const aDecimal = this.toDecimal(a, decimals);
         const bDecimal = this.toDecimal(b, decimals);
-        const answer = aDecimal * bDecimal;
+        // DEV-001: 修复小数精度问题，确保答案精确到两位小数
+        const answer = Math.round((aDecimal * bDecimal) * 100) / 100;
         const question = `${aDecimal.toFixed(decimals)} × ${bDecimal.toFixed(decimals)} =`;
         
         return this.createQuestion(question, answer, 'decimal', 5, 'improved', ['小数乘除法']);
@@ -68,19 +71,22 @@ export class Grade5Generator extends BaseGenerator {
             const commonDenom = denominator1 * denominator2;
             const newNumerator1 = numerator1 * denominator2;
             const newNumerator2 = numerator2 * denominator1;
-            answer = (newNumerator1 + newNumerator2) / commonDenom;
+            // DEV-001: 修复小数精度问题，确保答案精确到两位小数
+            answer = Math.round(((newNumerator1 + newNumerator2) / commonDenom) * 100) / 100;
             question = `${numerator1}/${denominator1} + ${numerator2}/${denominator2} =`;
         } else {
             const commonDenom = denominator1 * denominator2;
             const newNumerator1 = numerator1 * denominator2;
             const newNumerator2 = numerator2 * denominator1;
-            answer = (newNumerator1 - newNumerator2) / commonDenom;
+            // DEV-001: 修复小数精度问题，确保答案精确到两位小数
+            answer = Math.round(((newNumerator1 - newNumerator2) / commonDenom) * 100) / 100;
             if (answer < 0) {
                 [numerator1, numerator2] = [numerator2, numerator1];
                 [denominator1, denominator2] = [denominator2, denominator1];
                 const newN1 = numerator1 * denominator2;
                 const newN2 = numerator2 * denominator1;
-                answer = Math.abs((newN1 - newN2) / (denominator1 * denominator2));
+                // DEV-001: 修复小数精度问题，确保答案精确到两位小数
+                answer = Math.round(Math.abs((newN1 - newN2) / (denominator1 * denominator2)) * 100) / 100;
             }
             question = `${numerator1}/${denominator1} - ${numerator2}/${denominator2} =`;
         }
