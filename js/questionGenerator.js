@@ -573,21 +573,33 @@ function generateGrade4(difficultyLevel) {
 function generateGrade5(difficultyLevel) {
     let a, b, answer, question, type, tags;
     
+    // 小数精度处理函数 - 保留两位小数
+    const toDecimal = (num) => Math.round(num * 100) / 100;
+    
     if (difficultyLevel === 'basic') {
+        // 小数加减法（支持加法和减法）
+        const isAddition = Math.random() > 0.5;
         a = Math.floor(Math.random() * 90) + 10;
         b = Math.floor(Math.random() * 90) + 10;
-        const decimals = Math.random() > 0.5 ? 1 : 2;
-        const aDecimal = Math.round((Math.random() * a) * 10) / 10;
-        const bDecimal = Math.round((Math.random() * b) * 10) / 10;
-        answer = Math.round((aDecimal + bDecimal) * 10) / 10;
-        question = `${aDecimal.toFixed(1)} + ${bDecimal.toFixed(1)} =`;
+        const aDecimal = toDecimal(Math.random() * a);
+        const bDecimal = toDecimal(Math.random() * b);
+        
+        if (isAddition) {
+            answer = toDecimal(aDecimal + bDecimal);
+            question = `${aDecimal.toFixed(1)} + ${bDecimal.toFixed(1)} =`;
+        } else {
+            // 减法确保结果为正
+            const [big, small] = aDecimal >= bDecimal ? [aDecimal, bDecimal] : [bDecimal, aDecimal];
+            answer = toDecimal(big - small);
+            question = `${big.toFixed(1)} - ${small.toFixed(1)} =`;
+        }
         type = 'decimal';
         tags = ['小数加减法'];
     } else if (difficultyLevel === 'improved') {
         a = Math.floor(Math.random() * 90) + 10;
         b = Math.floor(Math.random() * 8) + 2;
-        const aDecimal = Math.round((Math.random() * a) * 10) / 10;
-        answer = Math.round(aDecimal * b * 10) / 10;
+        const aDecimal = toDecimal(Math.random() * a);
+        answer = toDecimal(aDecimal * b);
         question = `${aDecimal.toFixed(1)} × ${b} =`;
         type = 'decimal';
         tags = ['小数乘除法'];
