@@ -629,7 +629,7 @@ function generateGrade5(difficultyLevel) {
 
 // 六年级题目生成
 function generateGrade6(difficultyLevel) {
-    let a, b, answer, question, type, tags;
+    let a, b, c, d, answer, question, type, tags;
     
     if (difficultyLevel === 'basic') {
         a = Math.floor(Math.random() * 20) + 2;
