@@ -9,20 +9,21 @@
 
 ## 📋 Todo List
 
-### P0 - 技术债务修复（已定义）
-- [ ] `DEV-001` 修复 Grade5Generator 小数精度问题
+### P0 - 技术债务修复（已完成）
+- [x] `DEV-001` 修复 Grade5Generator 小数精度问题 ✅
   - 位置: `src/generators/Grade5Generator.ts`
-  - 问题: 浮点数精度导致答案不准确
-  - 方案: 使用 `toFixed()` 或整数运算
+  - 方案: 使用 `Math.round(num * 100) / 100` 保留两位小数
+  - 完成时间: 2026-03-21
 
-- [ ] `DEV-002` 添加输入参数验证
-  - 位置: `src/core/QuestionGenerator.ts`
-  - 问题: 未验证 count 等参数有效性
-  - 方案: 添加边界检查和类型验证
+- [x] `DEV-002` 添加输入参数验证 ✅
+  - 位置: `src/core/QuestionGenerator.ts` (BaseGenerator)
+  - 方案: `validateAndNormalizeOptions` 方法，count 限制 [1, 1000]
+  - 完成时间: 2026-03-21
 
-- [ ] `DEV-003` 添加代码注释
+- [x] `DEV-003` 添加代码注释 ✅
   - 范围: 所有核心文件
-  - 标准: 公共 API 必须有 JSDoc
+  - 标准: 公共 API 已有 JSDoc
+  - 完成时间: 2026-03-21
 
 ### P1 - 待PM输出后
 - [ ] `DEV-004` 实现错题本功能
@@ -53,6 +54,6 @@
 ## 📊 完成度
 
 ```
-本迭代: ░░░░░░░░░░ 0% (0/3)
-阻塞中: 等待PM输出
+本迭代: ██████████ 100% (3/3) ✓
+P0 技术债务已全部修复
 ```
