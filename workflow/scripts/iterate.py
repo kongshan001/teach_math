@@ -26,6 +26,46 @@ ROLE_ORDER = ["planner", "pm", "developer", "qa"]
 def get_timestamp():
     return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+def get_iteration_number():
+    """从 STATUS.md 获取当前迭代号"""
+    status_file = WORKFLOW / "STATUS.md"
+    if status_file.exists():
+        content = status_file.read_text()
+        for line in content.split("\n"):
+            if "当前迭代" in line and "#" in line:
+                try:
+                    return int(line.split("#")[1].split()[0])
+                except:
+                    return 1
+    return 1
+
+def update_changelog():
+    """更新 CHANGELOG.md，追加本次迭代的记录"""
+    changelog_file = ARTIFACTS / "CHANGELOG.md"
+    if not changelog_file.exists():
+        return
+
+    timestamp = get_timestamp()
+    iteration = get_iteration_number()
+
+    # 读取当前内容
+    content = changelog_file.read_text()
+
+    # 在迭代记录表格中追加一行
+    new_entry = f"| #{iteration} | {timestamp} | 迭代执行 - 状态监控，Git 自动提交 |\n"
+
+    # 找到迭代记录表格的位置
+    lines = content.split("\n")
+    for i, line in enumerate(lines):
+        if "| 迭代 | 时间 |" in line and i + 1 < len(lines):
+                # 在表头和分隔线之后插入
+                if "|---" in lines[i + 1]:
+                    lines.insert(i + 2, new_entry.rstrip())
+                    break
+
+    changelog_file.write_text("\n".join(lines))
+    log(f"已更新 CHANGELOG.md - 迭代 #{iteration}", "Changelog")
+
 def log(message, role="System"):
     """记录日志"""
     timestamp = get_timestamp()
@@ -410,6 +450,9 @@ def git_commit_and_push():
     import subprocess
 
     try:
+        # 更新 CHANGELOG.md
+        update_changelog()
+
         # 检查是否有变更
         result = subprocess.run(
             ["git", "status", "--porcelain"],
@@ -461,6 +504,45 @@ def git_commit_and_push():
     except Exception as e:
         log(f"Git 操作失败: {e}", "Git")
         return False
+
+def update_changelog():
+    """更新 CHANGELOG.md 迭代记录"""
+    changelog_file = ARTIFACTS / "CHANGELOG.md"
+    if not changelog_file.exists():
+        return
+
+    timestamp = get_timestamp()
+    iteration_num = get_iteration_number()
+
+    content = changelog_file.read_text()
+
+    # 在迭代记录表格中添加新行
+    new_row = f"| #{iteration_num} | {timestamp} | 迭代执行，状态监控 |\n"
+
+    # 找到迭代记录表格的位置
+    if "## 迭代记录" in content:
+        lines = content.split("\n")
+        for i, line in enumerate(lines):
+            if line.startswith("| #") and "时间" in line and "主要内容" in line:
+                # 在表头后插入新行
+                if i + 1 < len(lines) and lines[i + 1].startswith("|--"):
+                    lines.insert(i + 2, new_row.rstrip())
+                    break
+        changelog_file.write_text("\n".join(lines))
+        log("已更新 CHANGELOG.md", "Git")
+
+def get_iteration_number():
+    """获取当前迭代编号"""
+    status_file = WORKFLOW / "STATUS.md"
+    if status_file.exists():
+        content = status_file.read_text()
+        for line in content.split("\n"):
+            if "当前迭代" in line and "#" in line:
+                try:
+                    return line.split("#")[1].split()[0].strip()
+                except:
+                    pass
+    return "?"
 
 def run_iteration():
     """执行一次完整迭代"""
